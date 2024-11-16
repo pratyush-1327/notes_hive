@@ -9,3 +9,5 @@ Features:
     Note Editing: Modify existing notes.
     Note Deletion: Remove unwanted notes.
     Offline Storage: Persistent storage using Hive.
+Preview :
+![Screenshot_1731777774](https://github.com/user-attachments/assets/0efad68d-d01b-4358-ad07-2d3700a15a85)
