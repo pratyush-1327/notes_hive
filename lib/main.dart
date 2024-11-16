@@ -23,8 +23,18 @@ class MyApp extends StatelessWidget {
       title: 'Notes App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        brightness: Brightness.light,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          primary: const Color.fromARGB(255, 175, 205, 230),
+          secondary: Colors.green, // Background color of FAB
+          onSecondary: Colors.white, // Foreground color of FAB
+        ),
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+      ),
+      themeMode: ThemeMode.system,
       home: const HomeScreen(),
     );
   }
