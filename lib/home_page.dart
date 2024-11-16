@@ -18,72 +18,93 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Notes with Hive"),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: ValueListenableBuilder<Box<NotesModel>>(
         valueListenable: Boxes.getData().listenable(),
         builder: (context, box, _) {
           var data = box.values.toList().cast<NotesModel>();
-          return ListView.builder(
-              itemCount: box.length,
-              reverse: true,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return SizedBox(
-                  height: 120,
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                data[index].title.toString(),
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              const Spacer(),
-                              InkWell(
-                                  onTap: () {
-                                    delete(data[index]);
-                                  },
-                                  child: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  )),
-                              const SizedBox(
-                                width: 15,
-                              ),
-                              InkWell(
-                                  onTap: () {
-                                    _editMyDialog(
-                                        data[index],
-                                        data[index].title.toString(),
-                                        data[index].description.toString());
-                                  },
-                                  child: const Icon(
-                                    Icons.edit,
-                                    color: Colors.blue,
-                                  )),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Text(
-                            data[index].description.toString(),
-                            style: const TextStyle(
-                                fontSize: 19, fontWeight: FontWeight.w500),
-                          ),
-                        ],
+          return Stack(
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.green.shade700,
+                      Colors.blue.shade700,
+                    ],
+                  ),
+                ),
+              ),
+              ListView.builder(
+                itemCount: box.length,
+                reverse: true,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return SizedBox(
+                    height: 160,
+                    child: Card(
+                      margin: EdgeInsets.all(10),
+                      color: Color.fromARGB(108, 255, 255, 255),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 15),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  data[index].title.toString(),
+                                  style: const TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const Spacer(),
+                                InkWell(
+                                    onTap: () {
+                                      delete(data[index]);
+                                    },
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Color.fromARGB(255, 206, 16, 2),
+                                    )),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                InkWell(
+                                    onTap: () {
+                                      _editMyDialog(
+                                          data[index],
+                                          data[index].title.toString(),
+                                          data[index].description.toString());
+                                    },
+                                    child: const Icon(
+                                      Icons.edit,
+                                      color: Color.fromARGB(255, 124, 33, 243),
+                                    )),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              data[index].description.toString(),
+                              style: const TextStyle(
+                                  fontSize: 19, fontWeight: FontWeight.w400),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              });
+                  );
+                },
+              ),
+            ],
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -100,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text("Add NOTES"),
+            title: const Text("Add your Note"),
             content: SingleChildScrollView(
               child: Column(
                 children: [
@@ -115,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   TextFormField(
                     controller: descriptionController,
                     decoration: const InputDecoration(
-                        hintText: "Enter Title", border: OutlineInputBorder()),
+                        hintText: "Enter Desc", border: OutlineInputBorder()),
                   ),
                 ],
               ),
@@ -131,15 +152,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   )),
               TextButton(
                   onPressed: () {
-                    final data = NotesModel(
-                        title: titleController.text,
-                        description: descriptionController.text);
-                    final box = Boxes.getData();
-                    box.add(data);
-                    data.save();
-                    titleController.clear();
-                    descriptionController.clear();
-                    Navigator.pop(context);
+                    if (titleController.text.isNotEmpty ||
+                        descriptionController.text.isNotEmpty) {
+                      final data = NotesModel(
+                          title: titleController.text,
+                          description: descriptionController.text);
+                      final box = Boxes.getData();
+                      box.add(data);
+                      data.save();
+                      titleController.clear();
+                      descriptionController.clear();
+                      Navigator.pop(context);
+                      // pop error if empty
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                              'Please enter both the fields for your note.'),
+                        ),
+                      );
+                    }
                   },
                   child: const Icon(
                     Icons.add_circle,
@@ -150,10 +182,12 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
+//deelete function
   void delete(NotesModel notesModel) async {
     await notesModel.delete();
   }
 
+//function for editing control
   Future<void> _editMyDialog(
       NotesModel notesModel, String title, String description) async {
     titleController.text = title;
