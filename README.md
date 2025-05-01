@@ -1,7 +1,7 @@
 Simple Notes App
 
 A minimalistic notes app built with Flutter and Hive, designed for quick note-taking.
-
+Which uses hive for backend
 Features:
 
     Simple UI: Clean and intuitive interface.
